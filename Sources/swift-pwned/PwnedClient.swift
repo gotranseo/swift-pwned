@@ -9,7 +9,7 @@ import Foundation
 import Vapor
 import Crypto
 
-public struct PwnedClient {
+public struct PwnedClient: Service {
     let client: Client
     
     public init(client: Client) {
