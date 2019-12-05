@@ -1,5 +1,5 @@
 import XCTest
-@testable import swift_pwned
+@testable import SwiftPwned
 import Vapor
 
 final class swift_pwnedTests: XCTestCase {
