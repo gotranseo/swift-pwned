@@ -1,6 +1,6 @@
 # SwiftPwned
 
-A Vapor/Swift library that checks pwnedpasswords.com.
+A Vapor/Swift library that checks the https://haveibeenpwned.com/passwords API (all credit to Troy Hunt).
 
 ## Installation
 
