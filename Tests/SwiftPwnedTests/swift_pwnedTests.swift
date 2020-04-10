@@ -4,8 +4,9 @@ import Vapor
 
 final class swift_pwnedTests: XCTestCase {
     func testClient() throws {
-        let application = try Application()
-        let client = try PwnedClient(client: application.client())
+        let application = Application()
+        defer { application.shutdown() }
+        let client = PwnedClient(client: application.client)
         
         // Test hashing
         let output = try client.generateHash(input: "password")

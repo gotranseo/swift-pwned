@@ -7,9 +7,8 @@
 
 import Foundation
 import Vapor
-import Crypto
 
-public struct PwnedClient: Service {
+public struct PwnedClient {
     let client: Client
     
     public init(client: Client) {
@@ -17,7 +16,7 @@ public struct PwnedClient: Service {
     }
     
     internal func generateHash(input: String) throws -> String {
-        return try SHA1.hash(input).hexEncodedString().uppercased()
+        return Insecure.SHA1.hash(data: Data(input.utf8)).hexEncodedString().uppercased()
     }
     
     internal func getHeadAndTail(input: String) -> (head: String, tail: String) {
@@ -28,10 +27,11 @@ public struct PwnedClient: Service {
         return (head, tail)
     }
     
-    internal func getHashed(firstFive: String) throws -> Future<[PwnedResponse]> {
+    internal func getHashed(firstFive: String) throws -> EventLoopFuture<[PwnedResponse]> {
         let url = "https://api.pwnedpasswords.com/range/\(firstFive)"
-        return client.get(url).map { res in
-            guard let data = res.http.body.data else { throw Abort(.badRequest) }
+        return client.get(URI(string: url)).flatMapThrowing { res in
+            guard let body = res.body else { throw Abort(.badRequest) }
+            let data = Data(body.readableBytesView)
             guard let string = String(data: data, encoding: .utf8) else { throw Abort(.badRequest) }
             
             return string
@@ -46,7 +46,7 @@ public struct PwnedClient: Service {
         }
     }
     
-    public func pwned(password: String) throws -> Future<Bool> {
+    public func pwned(password: String) throws -> EventLoopFuture<Bool> {
         let hash = try generateHash(input: password)
         let headTail = getHeadAndTail(input: hash)
         let firstFive = headTail.head
