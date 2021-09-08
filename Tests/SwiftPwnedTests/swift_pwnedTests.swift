@@ -2,8 +2,9 @@ import XCTest
 @testable import SwiftPwned
 import Vapor
 
+@available(macOS 12.0.0, *)
 final class swift_pwnedTests: XCTestCase {
-    func testClient() throws {
+    func testClient() async throws {
         let application = Application()
         defer { application.shutdown() }
         let client = PwnedClient(client: application.client)
@@ -24,7 +25,8 @@ final class swift_pwnedTests: XCTestCase {
         XCTAssertEqual(expectedTail, tail)
         
         // Test get data
-        XCTAssert(try client.pwned(password: "password").wait())
+        let val = try await client.pwned(password: "password")
+        XCTAssert(val)
     }
 
     static var allTests = [
